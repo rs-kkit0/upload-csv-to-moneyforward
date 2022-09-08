@@ -86,7 +86,7 @@ def doUpload(input_file):
             # expense info
             elem = driver.find_element(By.ID, "user_asset_act_sub_account_id_hash")
             select = Select(elem)
-            select.select_by_index(11)
+            select.select_by_index(12)
 
             # 項目
             # js = 'alert("Hello World")'
