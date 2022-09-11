@@ -51,11 +51,26 @@ def createReport():
         select.select_by_visible_text("グループ選択なし")
         sleep(3)
 
-        # input form
+        # report url
         driver.get(reportUrl)
         sleep(3)
-        elem = driver.find_elements(By.CLASS_NAME, "cf-new-btn")[1]
+
+        elem = driver.find_element(By.ID, "b_range")
         elem.click()
+        sleep(3)
+
+        # get table
+        tableElem = driver.find_elements(By.ID, "table-outgo")[0]
+        trs = tableElem.find_elements(By.TAG_NAME, "tr")
+        for i in range(1, len(trs)):
+            tds = trs[i].find_elements(By.TAG_NAME, "td")
+            line = ""
+            for j in range(0, len(tds)):
+                if j < len(tds)-1:
+                    line += "%s\t" % (tds[j].text)
+                else:
+                    line += "%s" %(tds[j].text)
+            print(line + "\r\n")
         sleep(3)
 
         driver.quit()
