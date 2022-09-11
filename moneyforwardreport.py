@@ -65,15 +65,32 @@ def createReport():
         # get table
         tableElem = driver.find_elements(By.ID, "table-outgo")[0]
         trs = tableElem.find_elements(By.TAG_NAME, "tr")
+        one_third = []
+        one_second = []
+        one_one = []
         for i in range(1, len(trs)):
             tds = trs[i].find_elements(By.TAG_NAME, "td")
-            line = ""
-            for j in range(0, len(tds)):
-                if j < len(tds)-1:
-                    line += "%s\t" % (tds[j].text)
-                else:
-                    line += "%s" %(tds[j].text)
-            print(line + "\r\n")
+            line = []
+            line.append(tds[0].text)
+            import re
+            line.append(int(re.sub(r"\D", "", tds[1].text)))
+            if "水道・光熱費 合計" in line[0]:
+                one_third.append(line)
+            if "家賃" in line[0]:
+                one_third.append(line)
+            if "割勘" in line[0]:
+                one_second.append(line)
+            if "えり負担" in line[0]:
+                one_one.append(line)
+
+
+        print("*** 1/3負担 ***")
+        [print(i) for i in one_third]
+        print("*** 1/2負担 ***")
+        [print(i) for i in one_second]
+        print("** 1/1負担 ***")
+        [print(i) for i in one_one]
+
         sleep(3)
 
         driver.quit()
