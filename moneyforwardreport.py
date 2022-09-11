@@ -55,6 +55,9 @@ def createReport():
         driver.get(reportUrl)
         sleep(3)
 
+        # 前月に移動している
+        # todo
+        # 指定した月の値まで遷移するようにしたい 
         elem = driver.find_element(By.ID, "b_range")
         elem.click()
         sleep(3)
