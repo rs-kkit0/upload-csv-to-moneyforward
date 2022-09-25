@@ -1,5 +1,6 @@
 import csv
 from http.server import executable
+import math
 from select import select
 import sys
 from time import sleep
@@ -83,23 +84,37 @@ def createReport():
             if "えり負担" in line[0]:
                 one_one.append(line)
 
-
-        print("*** 1/3負担 ***")
-        [print(i) for i in one_third]
-        print("*** 1/2負担 ***")
-        [print(i) for i in one_second]
-        print("** 1/1負担 ***")
-        [print(i) for i in one_one]
+        total = 0
+        print("*************************")
+        total += output(one_third, 3)
+        total += output(one_second, 2)
+        total += output(one_one, 1)
+        print("*************************")
+        print("*** 請求合計: " + "{:,}".format(total) + "円 ***")
+        print("*************************")
 
         sleep(3)
 
         driver.quit()
 
-    except ValueError:
+    except Exception as e:
+        print(repr(e))
         print('Oops! Some Error are occured.')
 
     return 1
 
+def output(list: list, val: int) -> int:
+    temp = "1/"+ str(val) + "負担"
+    print("*** " + temp + " ***")
+    total = 0
+    for i in list:
+        print(i)
+        total += i[1]
+    
+    calc = math.floor(total / (val * 1000)) * 1000
+    print(temp + " 合計: "+ "{:,}".format(total) + " => " + "{:,}".format(calc) + "(1,000以下切捨て)")
+    return calc
+ 
 if __name__ == '__main__':
     print("usage: python moneyforwardreport.py")
     sys.exit(createReport())
