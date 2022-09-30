@@ -89,6 +89,9 @@ def createReport():
         total += output(one_third, 3)
         total += output(one_second, 2)
         total += output(one_one, 1)
+
+        print("家事手当: 30,000円")
+        total -= 30000
         print("*************************")
         print("*** 請求合計: " + "{:,}".format(total) + "円 ***")
         print("*************************")
