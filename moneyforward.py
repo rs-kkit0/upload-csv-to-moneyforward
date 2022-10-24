@@ -5,6 +5,7 @@ import sys
 from time import sleep
 from unittest import skip
 from selenium.webdriver.support.select import Select
+from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
@@ -22,7 +23,11 @@ def doUpload(input_file):
 
     try:
         # driver
-        driver = webdriver.Chrome(ChromeDriverManager().install())
+        driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()))
+        # options = webdriver.ChromeOptions()
+        # options.add_argument('--window-size=1920,1080')
+        # options.add_argument('--headless')
+        # driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()))
 
         # login
         driver.implicitly_wait(20)
