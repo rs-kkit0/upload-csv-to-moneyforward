@@ -78,6 +78,8 @@ def createReport():
         one_third = []
         one_second = []
         one_one = []
+        tatekae = []
+
         for i in range(1, len(trs)):
             tds = trs[i].find_elements(By.TAG_NAME, "td")
             line = []
@@ -92,12 +94,15 @@ def createReport():
                 one_second.append(line)
             if "えり負担" in line[0]:
                 one_one.append(line)
+            if "立替" in line[0]:
+                tatekae.append(line)
 
         total = 0
         print("*************************")
         total += output(one_third, 3)
         total += output(one_second, 2)
         total += output(one_one, 1)
+        total -= output(tatekae, 2, True)
 
         print("家事手当: 30,000円")
         total -= 30000
@@ -115,9 +120,14 @@ def createReport():
 
     return 1
 
-def output(list: list, val: int) -> int:
-    temp = "1/"+ str(val) + "負担"
-    print("*** " + temp + " ***")
+def output(list: list, val: int, flg = False) -> int:
+    if (flg):
+        temp = "立替清算 1/"+ str(val) + "負担"
+        print("*** " + temp + " ***")
+    else:
+        temp = "1/"+ str(val) + "負担"
+        print("*** " + temp + " ***")
+
     total = 0
     for i in list:
         print(i)
