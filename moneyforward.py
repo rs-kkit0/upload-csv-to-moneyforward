@@ -131,8 +131,8 @@ def doUpload(input_file):
         print("EOF: " + input_file)
         driver.quit()
 
-    except ValueError:
-        print('Oops! Some Error are occured.')
+    except Exception as e:
+         print(f"{e.__class__.__name__}: {e}")
 
     return 1
 
