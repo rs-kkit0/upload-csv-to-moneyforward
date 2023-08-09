@@ -21,58 +21,67 @@ from webdriver_manager.chrome import ChromeDriverManager
 import requests
 
 
-def doUpload(input_file):
+def driverInit():
+    # driver
+    url = 'https://chromedriver.storage.googleapis.com/LATEST_RELEASE'
+    response = requests.get(url)
+    options = Options()
+    # options.add_argument('--headless')# ヘッドレス起動
+    options.add_argument('--disable-gpu')
+    options.add_argument('--ignore-certificate-errors')# SSLエラー対策
+    options.add_argument('--disable-blink-features=AutomationControlled')# webdriver検出を回避
+    options.add_argument('--blink-settings=imagesEnabled=false')# 画像非表示
+
+    ## 最新のバージョンのChromeドライバーを取得する
+    try:
+        driver_path = ChromeDriverManager().install()
+        return webdriver.Chrome(executable_path=driver_path, options=options)
+    except ValueError:
+        # ValueErrorが発生した場合、バージョンを指定してインストール
+        driver_path = ChromeDriverManager(version=response.text).install()
+        return webdriver.Chrome(executable_path=driver_path, options=options)
+
+def login(driver):
     topurl = "https://moneyforward.com/"
-    inputFormUrl = "https://moneyforward.com/cf"
 
     user = settings.user
     password = settings.password
 
+    # login
+    driver.implicitly_wait(20)
+    driver.get(topurl)
+    sleep(3)
+    elem = driver.find_elements(By.LINK_TEXT, "ログイン")
+    elem[0].click()
+    sleep(3)
+    elem = driver.find_elements(By.LINK_TEXT, "メールアドレスでログイン")
+    elem[0].click()
+
+    elem = driver.find_element(By.NAME, "mfid_user[email]")
+    elem.clear()
+    elem.send_keys(user)
+    elem.submit()
+    sleep(3)
+    elem = driver.find_element(By.NAME, "mfid_user[password]")
+    elem.clear()
+    elem.send_keys(password)
+    elem.submit()
+    sleep(3)
+
+    # 生体認証確認スキップ
+    elem = driver.find_elements(By.LINK_TEXT, "スキップする")
+    elem[0].click()
+    sleep(3)
+
+def doUpload(input_file):
+    inputFormUrl = "https://moneyforward.com/cf"
+
     try:
         # driver
-        url = 'https://chromedriver.storage.googleapis.com/LATEST_RELEASE'
-        response = requests.get(url)
-        options = Options()
-        options.add_argument('--headless')# ヘッドレス起動
-        options.add_argument('--disable-gpu')
-        options.add_argument('--ignore-certificate-errors')# SSLエラー対策
-        options.add_argument('--disable-blink-features=AutomationControlled')# webdriver検出を回避
-        options.add_argument('--blink-settings=imagesEnabled=false')# 画像非表示
-
-        ## 最新のバージョンのChromeドライバーを取得する
-        try:
-            driver_path = ChromeDriverManager().install()
-            driver = webdriver.Chrome(executable_path=driver_path, options=options)
-        except ValueError:
-            # ValueErrorが発生した場合、バージョンを指定してインストール
-            driver_path = ChromeDriverManager(version=response.text).install()
-            driver = webdriver.Chrome(executable_path=driver_path, options=options)
+        driver = driverInit()
 
         # login
-        driver.implicitly_wait(20)
-        driver.get(topurl)
-        sleep(3)
-        elem = driver.find_elements(By.LINK_TEXT, "ログイン")
-        elem[0].click()
-        sleep(3)
-        elem = driver.find_elements(By.LINK_TEXT, "メールアドレスでログイン")
-        elem[0].click()
-
-        elem = driver.find_element(By.NAME, "mfid_user[email]")
-        elem.clear()
-        elem.send_keys(user)
-        elem.submit()
-        sleep(3)
-        elem = driver.find_element(By.NAME, "mfid_user[password]")
-        elem.clear()
-        elem.send_keys(password)
-        elem.submit()
-        sleep(3)
-
-        # 生体認証確認スキップ
-        elem = driver.find_elements(By.LINK_TEXT, "スキップする")
-        elem[0].click()
-        sleep(3)
+        login(driver)
 
         # group
         elem = driver.find_element(By.ID, "group_id_hash")
