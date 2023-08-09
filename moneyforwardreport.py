@@ -14,46 +14,18 @@ import settings
 
 from selenium import webdriver
 from webdriver_manager.chrome import ChromeDriverManager
+
+import moneyforward
  
 def createReport():
-    topurl = "https://moneyforward.com/"
     reportUrl = "https://moneyforward.com/cf/summary"
-
-    user = settings.user
-    password = settings.password
 
     try:
         # driver
-        options = webdriver.ChromeOptions()
-        options.add_argument('--headless')                 # headlessモードを使用する
-        options.add_argument('--disable-gpu')              # headlessモードで暫定的に必要なフラグ(そのうち不要になる)
-        options.add_argument('--disable-extensions')       # すべての拡張機能を無効にする。ユーザースクリプトも無効にする
-        options.add_argument('--proxy-server="direct://"') # Proxy経由ではなく直接接続する
-        options.add_argument('--proxy-bypass-list=*')      # すべてのホスト名
-        options.add_argument('--start-maximized')          # 起動時にウィンドウを最大化する
-        options.add_argument('--user-agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/84.0.4147.89 Safari/537.36')
-        driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
+        driver = moneyforward.driverInit()
 
         # login
-        driver.implicitly_wait(20)
-        driver.get(topurl)
-        sleep(3)
-        elem = driver.find_elements(By.LINK_TEXT, "ログイン")
-        elem[0].click()
-        sleep(3)
-        elem = driver.find_elements(By.LINK_TEXT, "メールアドレスでログイン")
-        elem[0].click()
-
-        elem = driver.find_element(By.NAME, "mfid_user[email]")
-        elem.clear()
-        elem.send_keys(user)
-        elem.submit()
-        sleep(3)
-        elem = driver.find_element(By.NAME, "mfid_user[password]")
-        elem.clear()
-        elem.send_keys(password)
-        elem.submit()
-        sleep(3)
+        moneyforward.login(driver)
 
         # group
         elem = driver.find_element(By.ID, "group_id_hash")
