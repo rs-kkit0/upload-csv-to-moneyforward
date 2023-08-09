@@ -26,7 +26,7 @@ def driverInit():
     url = 'https://chromedriver.storage.googleapis.com/LATEST_RELEASE'
     response = requests.get(url)
     options = Options()
-    # options.add_argument('--headless')# ヘッドレス起動
+    options.add_argument('--headless')# ヘッドレス起動
     options.add_argument('--disable-gpu')
     options.add_argument('--ignore-certificate-errors')# SSLエラー対策
     options.add_argument('--disable-blink-features=AutomationControlled')# webdriver検出を回避
