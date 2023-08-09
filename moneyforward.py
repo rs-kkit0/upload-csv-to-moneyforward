@@ -14,6 +14,13 @@ import settings
 from selenium import webdriver
 from webdriver_manager.chrome import ChromeDriverManager
  
+from selenium import webdriver
+from selenium.webdriver.support.wait import WebDriverWait
+from selenium.webdriver.chrome.options import Options
+from webdriver_manager.chrome import ChromeDriverManager
+import requests
+
+
 def doUpload(input_file):
     topurl = "https://moneyforward.com/"
     inputFormUrl = "https://moneyforward.com/cf"
@@ -23,15 +30,23 @@ def doUpload(input_file):
 
     try:
         # driver
-        options = webdriver.ChromeOptions()
-        options.add_argument('--headless')                 # headlessモードを使用する
-        options.add_argument('--disable-gpu')              # headlessモードで暫定的に必要なフラグ(そのうち不要になる)
-        options.add_argument('--disable-extensions')       # すべての拡張機能を無効にする。ユーザースクリプトも無効にする
-        options.add_argument('--proxy-server="direct://"') # Proxy経由ではなく直接接続する
-        options.add_argument('--proxy-bypass-list=*')      # すべてのホスト名
-        options.add_argument('--start-maximized')          # 起動時にウィンドウを最大化する
-        options.add_argument('--user-agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/84.0.4147.89 Safari/537.36')
-        driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
+        url = 'https://chromedriver.storage.googleapis.com/LATEST_RELEASE'
+        response = requests.get(url)
+        options = Options()
+        options.add_argument('--headless')# ヘッドレス起動
+        options.add_argument('--disable-gpu')
+        options.add_argument('--ignore-certificate-errors')# SSLエラー対策
+        options.add_argument('--disable-blink-features=AutomationControlled')# webdriver検出を回避
+        options.add_argument('--blink-settings=imagesEnabled=false')# 画像非表示
+
+        ## 最新のバージョンのChromeドライバーを取得する
+        try:
+            driver_path = ChromeDriverManager().install()
+            driver = webdriver.Chrome(executable_path=driver_path, options=options)
+        except ValueError:
+            # ValueErrorが発生した場合、バージョンを指定してインストール
+            driver_path = ChromeDriverManager(version=response.text).install()
+            driver = webdriver.Chrome(executable_path=driver_path, options=options)
 
         # login
         driver.implicitly_wait(20)
@@ -52,6 +67,11 @@ def doUpload(input_file):
         elem.clear()
         elem.send_keys(password)
         elem.submit()
+        sleep(3)
+
+        # 生体認証確認スキップ
+        elem = driver.find_elements(By.LINK_TEXT, "スキップする")
+        elem[0].click()
         sleep(3)
 
         # group
