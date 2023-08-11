@@ -31,6 +31,7 @@ def driverInit():
     options.add_argument('--ignore-certificate-errors')# SSLエラー対策
     options.add_argument('--disable-blink-features=AutomationControlled')# webdriver検出を回避
     options.add_argument('--blink-settings=imagesEnabled=false')# 画像非表示
+    options.add_argument("user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36")
 
     ## 最新のバージョンのChromeドライバーを取得する
     try:
