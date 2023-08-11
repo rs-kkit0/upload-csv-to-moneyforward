@@ -20,6 +20,7 @@ from selenium.webdriver.chrome.options import Options
 from webdriver_manager.chrome import ChromeDriverManager
 import requests
 
+import mapping
 
 def driverInit():
     # driver
@@ -110,12 +111,6 @@ def doUpload(input_file):
                 count += 1
                 continue
 
-            # date info
-            elem = driver.find_element(By.ID, "updated-at")
-            elem.clear()
-            sleep(1)
-            elem.send_keys(row[0])
-
             # price info 
             elem = driver.find_element(By.ID, "appendedPrependedInput")
             elem.clear()
@@ -127,15 +122,38 @@ def doUpload(input_file):
             select = Select(elem)
             select.select_by_index(12)
 
-            # 項目
-            # js = 'alert("Hello World")'
-            # driver.execute_script(js)
+            # 分類、区分が設定されている場合大項目と中項目の設定を行う
+            if len(row) >= 5 and row[3] and row[4]:
+                key = (row[3], row[4])
+                if key in mapping.category_mapping:
+                    ids = mapping.category_mapping(key)
+                    # 大項目
+                    elem = driver.find_element(By.ID, "js-large-category-selected")
+                    elem.click()
+                    sleep(1)
+                    elem = driver.find_element(By.ID, ids["large_category_id"])
+                    elem.click()
+                    sleep(1)
+
+                    # 中項目
+                    elem = driver.find_element(By.ID, "js-middle-category-selected")
+                    elem.click()
+                    sleep(1)
+                    elem = driver.find_element(By.ID, ids["middle_category_id"])
+                    elem.click()
+                    sleep(1)
 
             # text info
             elem = driver.find_element(By.ID, "js-content-field")
             elem.clear()
             sleep(1)
             elem.send_keys(row[1])
+
+            # date info
+            elem = driver.find_element(By.ID, "updated-at")
+            elem.clear()
+            sleep(1)
+            elem.send_keys(row[0])
 
             #save
             sleep(1)
