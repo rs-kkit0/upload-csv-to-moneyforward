@@ -5,27 +5,19 @@ import sys
 from time import sleep
 from unittest import skip
 from selenium.webdriver.support.select import Select
-from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.common.by import By
-from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 import settings
 
 from selenium import webdriver
-from webdriver_manager.chrome import ChromeDriverManager
  
 from selenium import webdriver
-from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.chrome.options import Options
-from webdriver_manager.chrome import ChromeDriverManager
-import requests
 
 import mapping
 
 def driverInit():
     # driver
-    url = 'https://chromedriver.storage.googleapis.com/LATEST_RELEASE'
-    response = requests.get(url)
     options = Options()
     options.add_argument('--headless')# ヘッドレス起動
     options.add_argument('--disable-gpu')
@@ -34,14 +26,7 @@ def driverInit():
     options.add_argument('--blink-settings=imagesEnabled=false')# 画像非表示
     options.add_argument("user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36")
 
-    ## 最新のバージョンのChromeドライバーを取得する
-    try:
-        driver_path = ChromeDriverManager().install()
-        return webdriver.Chrome(executable_path=driver_path, options=options)
-    except ValueError:
-        # ValueErrorが発生した場合、バージョンを指定してインストール
-        driver_path = ChromeDriverManager(version=response.text).install()
-        return webdriver.Chrome(executable_path=driver_path, options=options)
+    return webdriver.Chrome(options=options)
 
 def login(driver):
     topurl = "https://moneyforward.com/"
@@ -56,8 +41,6 @@ def login(driver):
     elem = driver.find_elements(By.LINK_TEXT, "ログイン")
     elem[0].click()
     sleep(3)
-    elem = driver.find_elements(By.LINK_TEXT, "メールアドレスでログイン")
-    elem[0].click()
 
     elem = driver.find_element(By.NAME, "mfid_user[email]")
     elem.clear()
@@ -126,7 +109,7 @@ def doUpload(input_file):
             if len(row) >= 5 and row[3] and row[4]:
                 key = (row[3], row[4])
                 if key in mapping.category_mapping:
-                    ids = mapping.category_mapping(key)
+                    ids = mapping.category_mapping[key]
                     # 大項目
                     elem = driver.find_element(By.ID, "js-large-category-selected")
                     elem.click()
