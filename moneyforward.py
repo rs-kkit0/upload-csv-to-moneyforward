@@ -3,6 +3,7 @@ import sys
 from time import sleep
 from selenium.webdriver.support.select import Select
 from selenium.webdriver.common.by import By
+from selenium.webdriver.common.action_chains import ActionChains
 import settings
 
 from selenium import webdriver
@@ -15,11 +16,13 @@ import mapping
 def driverInit():
     # driver
     options = Options()
-    options.add_argument('--headless')# ヘッドレス起動
+    # TODO ヘッドレス起動できるようにする
+    # options.add_argument('--headless')# ヘッドレス起動
     options.add_argument('--disable-gpu')
     options.add_argument('--ignore-certificate-errors')# SSLエラー対策
     options.add_argument('--disable-blink-features=AutomationControlled')# webdriver検出を回避
     options.add_argument('--blink-settings=imagesEnabled=false')# 画像非表示
+    options.add_argument('--start-maximized')# windowサイズ最大化
     options.add_argument("user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36")
 
     return webdriver.Chrome(options=options)
@@ -34,6 +37,13 @@ def login(driver):
     driver.implicitly_wait(20)
     driver.get(topurl)
     sleep(3)
+
+    # ヘッダー部分のログインメニューにhover
+    elem = driver.find_elements(By.CSS_SELECTOR, "#before-login-corporate > header > div.header-container > div.is-sp-hidden > nav > ul > li:nth-child(1) > p")
+    action_chains = ActionChains(driver)
+    action_chains.move_to_element(elem[0]).perform()
+    sleep(3)
+
     elem = driver.find_elements(By.LINK_TEXT, "ログイン")
     elem[0].click()
     sleep(3)
