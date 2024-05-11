@@ -66,8 +66,11 @@ def createReport():
         total += output(one_one, 1)
         total -= output(tatekae, 2, True)
 
-        print("家事手当: 30,000円")
-        total -= 30000
+        # TODO 抽象化する
+        print("育児手当: 20,000円")
+        total -= 20000
+        print("児童手当等支給分: 20,000円")
+        total -= 20000
         print("*************************")
         print("*** 請求合計: " + "{:,}".format(total) + "円 ***")
         print("*************************")
