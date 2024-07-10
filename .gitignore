@@ -1,3 +1,5 @@
+__pycache__/
+*.pyc
 settings.py
 test.csv
 mapping.py
