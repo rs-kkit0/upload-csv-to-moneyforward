@@ -1,14 +1,46 @@
 import math
 import sys
 from time import sleep
+from datetime import datetime, timedelta
 from selenium.webdriver.support.select import Select
 from selenium.webdriver.common.by import By
-
+from selenium.common.exceptions import NoSuchElementException
 
 import moneyforward
- 
-def createReport():
+
+def get_previous_month():
+    today = datetime.today()
+    first_day_of_current_month = today.replace(day=1)
+    last_day_of_previous_month = first_day_of_current_month - timedelta(days=1)
+    return last_day_of_previous_month.strftime('%Y%m')
+
+def click_until_date_range(driver, expected_month):
+    def click_b_range():
+        try:
+            elem = driver.find_element(By.ID, "b_range")
+            elem.click()
+            sleep(3)  # ページが更新されるのを待つ
+        except NoSuchElementException:
+            print("b_range要素が見つかりませんでした")
+
+    def check_date_range():
+        try:
+            from_to_elem = driver.find_element(By.CLASS_NAME, "from-to")
+            return expected_month in from_to_elem.text.strip()
+        except NoSuchElementException:
+            return False
+
+    while not check_date_range():
+        click_b_range()
+
+def createReport(param):
     reportUrl = "https://moneyforward.com/cf/summary"
+    expected_month = param[:4] + "/" + param[4:]
+
+    year = param[:4]
+    month = param[4:]
+    formatted_month = f"{year}年{month}月"
+
 
     try:
         # driver
@@ -27,12 +59,8 @@ def createReport():
         driver.get(reportUrl)
         sleep(3)
 
-        # 前月に移動している
-        # todo
-        # 指定した月の値まで遷移するようにしたい 
-        elem = driver.find_element(By.ID, "b_range")
-        elem.click()
-        sleep(3)
+        # 指定した月の値まで遷移する
+        click_until_date_range(driver, expected_month)
 
         # get table
         tableElem = driver.find_elements(By.ID, "table-outgo")[0]
@@ -60,7 +88,8 @@ def createReport():
                 tatekae.append(line)
 
         total = 0
-        print("*************************")
+        
+        print(f"*** {formatted_month}分 精算 ***")
         total += output(one_third, 3)
         total += output(one_second, 2)
         total += output(one_one, 1)
@@ -103,5 +132,12 @@ def output(list: list, val: int, flg = False) -> int:
     return calc
  
 if __name__ == '__main__':
-    print("usage: python moneyforwardreport.py")
-    sys.exit(createReport())
+    if len(sys.argv) == 2:
+        param = sys.argv[1]
+        if len(param) != 6 or not param.isdigit():
+            print("Invalid parameter. Usage: python moneyforwardreport.py YYYYMM")
+            sys.exit(1)
+    else:
+        param = get_previous_month()
+
+    sys.exit(createReport(param))
