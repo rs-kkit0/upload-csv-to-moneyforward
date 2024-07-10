@@ -60,9 +60,9 @@ def login(driver):
     sleep(3)
 
     # 生体認証確認スキップ
-    elem = driver.find_elements(By.LINK_TEXT, "スキップする")
-    elem[0].click()
-    sleep(3)
+    # elem = driver.find_elements(By.LINK_TEXT, "スキップする")
+    # elem[0].click()
+    # sleep(3)
 
 def doUpload(input_file):
     inputFormUrl = "https://moneyforward.com/cf"
