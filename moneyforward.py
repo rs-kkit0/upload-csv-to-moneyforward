@@ -57,12 +57,7 @@ def login(driver):
     elem.clear()
     elem.send_keys(password)
     elem.submit()
-    sleep(3)
-
-    # 生体認証確認スキップ
-    # elem = driver.find_elements(By.LINK_TEXT, "スキップする")
-    # elem[0].click()
-    # sleep(3)
+    input("ログインが完了したら、Enterキーを押してください...")
 
 def doUpload(input_file):
     inputFormUrl = "https://moneyforward.com/cf"
@@ -109,7 +104,7 @@ def doUpload(input_file):
             # expense info
             elem = driver.find_element(By.ID, "user_asset_act_sub_account_id_hash")
             select = Select(elem)
-            select.select_by_index(12)
+            select.select_by_index(13)
 
             # 分類、区分が設定されている場合大項目と中項目の設定を行う
             if len(row) >= 5 and row[3] and row[4]:
@@ -176,7 +171,7 @@ def doUpload(input_file):
 if __name__ == '__main__':
     if len(sys.argv) != 2:
         print("no input file")
-        print("usage: python moneyforward.py test.csv")
+        print("usage: python moneyforward.py RakutenPay_2025_3.csv")
         sys.exit()
     input_file = str(sys.argv[1])
     sys.exit(doUpload(input_file))
