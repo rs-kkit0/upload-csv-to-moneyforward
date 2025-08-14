@@ -100,6 +100,8 @@ def createReport(param):
         total -= 20000
         print("児童手当等支給分: 20,000円")
         total -= 20000
+        print("お弁当代: 8,000円")
+        total -= 8000
         print("*************************")
         print("*** 請求合計: " + "{:,}".format(total) + "円 ***")
         print("*************************")
