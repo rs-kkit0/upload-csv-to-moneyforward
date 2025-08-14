@@ -79,3 +79,6 @@ chromedriver.log
 htmlcov/
 .tox/
 .nox/
+
+# 個人設定ファイル
+report_config.py
